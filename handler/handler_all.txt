@@ -1,0 +1,57 @@
+package handler
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+)
+
+func GetHome(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "<h1>Hello World!</h1>")
+}
+
+func GetAbout(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Want to know about me?")
+}
+
+func GetJson(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+
+	json.NewEncoder(w).Encode("{a:1, b:2}")
+}
+
+type ToDo struct {
+	Task        string `json:"task"`
+	IsCompleted bool   `json:"is_completed"`
+}
+
+func GetTodo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Content-Type", "application/json")
+
+	ToDos := []ToDo{
+		{
+			Task:        "Learn Go",
+			IsCompleted: true,
+		},
+		{
+			Task:        "Get a Project",
+			IsCompleted: false,
+		},
+		{
+			Task:        "Become a Pro",
+			IsCompleted: false,
+		},
+	}
+
+	json.NewEncoder(w).Encode(ToDos)
+}
+
+func CreateTodo(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal("Unable to create ToDo: ", err)
+	}
+	taskName := r.FormValue("task")
+	fmt.Fprintf(w, "Task Name: %s", taskName)
+}
